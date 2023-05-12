@@ -24,4 +24,4 @@ To use the ChatGPT Python Interactor, make sure you have the following requireme
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/chatgpt-python-interactor.git
+   git clone https://github.com/TheSnowGuru/InterpreterGPT.git
