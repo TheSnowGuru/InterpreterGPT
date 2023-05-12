@@ -1,72 +1,94 @@
 import subprocess
 import openai
-from getpass import getpass
+from dotenv import load_dotenv
 import ast
 import sys
 import re
+import os
 
-# Initialize the OpenAI API with your secret key
-openai.api_key = getpass(prompt="Enter your OpenAI API key: ")
+# Load the OpenAI API key from the .env file
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
+# Function to generate code using GPT-3.5-turbo
 def generate_code(prompt):
+    # Create a chat completion with the OpenAI API
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": "You are a professional full stack developer."},
             {"role": "user", "content": prompt},
         ]
     )
+    # Return the content of the response
     return response['choices'][0]['message']['content']
 
+# Function to validate generated code
 def validate_code(code):
     try:
+        # Parse the code using ast.parse to validate its syntax
         ast.parse(code)
         return True
     except SyntaxError as e:
         print(f"Syntax error in generated code: {e}")
         return False
 
-def execute_code(code):
+# Function to execute the generated code
+def execute_code(file_name):
     try:
-        output = subprocess.check_output(['python', '-c', code], stderr=subprocess.STDOUT)
+        # Execute the code with subprocess.check_output
+        output = subprocess.check_output([sys.executable, file_name], stderr=subprocess.STDOUT)
         return output
     except subprocess.CalledProcessError as e:
         error_message = e.output.decode()
         print(f"An error occurred while executing the code: {error_message}")
-        match = re.search(r"No module named '([^']*)'", error_message)
-        if match:
-            missing_module_name = match.group(1)
-            print(f"Module {missing_module_name} is missing.")
-            approval = input(f"Do you approve installation of this module? (yes/no): ")
-            if approval.lower() == "yes":
-                install_missing_module(missing_module_name)
-                return execute_code(code)  # Retry code execution after installing the module
-        else:
-            sys.exit(1)
+        sys.exit(1)
 
-def install_missing_module(module_name):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", module_name])
+# Function to create a Python file and write the generated code to it
+def create_and_run_file(code):
+    file_name = input("Enter the name of the Python file you'd like to create (e.g., script.py): ")
+    with open(file_name, 'w') as f:
+        f.write(code)
+    print(f"Created file '{file_name}'")
+    return file_name
 
+# Main function
 def main():
-    initial_prompt = input("Please enter your initial request: ")
+    # Print the contents of the current directory
+    print("Current directory contents:")
+    for file_name in os.listdir():
+        print(f"  {file_name}")
+    
+    # Ask the user for their initial prompt
+    initial_prompt = input("Please enter your initial request for the script to create and run: ")
+    
+    # Generate the code
     code = generate_code(initial_prompt)
 
+    # Print the generated code
     print("Generated Code:")
     print("----------------")
     print(code)
     print("----------------")
 
+    # Validate the generated code
     if not validate_code(code):
         print("Code validation failed.")
         sys.exit(1)
 
+    # Ask the user for approval to execute the code
     approval = input("Do you approve execution of this code? (yes/no): ")
 
     if approval.lower() == "yes":
-        result = execute_code(code)
+        # Create a file with the generated code
+        file_name = create_and_run_file(code)
+        # Execute the generated code
+        result = execute_code(file_name)
+        # Print the output of the code execution
         print('Output:', result.decode())
     else:
         print("Execution cancelled.")
 
+# Run the main function
 if __name__ == "__main__":
     main()
