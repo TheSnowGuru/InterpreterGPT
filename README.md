@@ -1,8 +1,9 @@
 # InterpreterGPT
  🤖 ChatGPT Python Interactor 🐍  Interact with OpenAI's ChatGPT 🚀 within Python, generate any file type: 
  
-- Run python files
-- Genrate Pdfs
+- Generate & Run python files
+- Run scrapers with natural language 
+- Generate Pdfs
 - Generate Images
 - Generate Docs
 - And more....
