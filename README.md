@@ -1,5 +1,13 @@
 # InterpreterGPT
- 🤖 ChatGPT Python Interactor 🐍  Interact with OpenAI's ChatGPT 🚀 within Python 🐍! Have interactive conversations, run generated code, create Python files, and more! ⚡️ Easily integrate AI-powered chatbot capabilities into your applications. Get started now! 🎉
+ 🤖 ChatGPT Python Interactor 🐍  Interact with OpenAI's ChatGPT 🚀 within Python, generate any file type: 
+ 
+- Pdf
+- Images
+- Docs
+- And more....
+ 
+ 
+ 🐍! Have interactive conversations, run generated code, create Python files, and more! ⚡️ Easily integrate AI-powered chatbot capabilities into your applications. Get started now! 🎉
 The ChatGPT Python Interactor is an open-source project that enables developers to interact with the ChatGPT language model from OpenAI within a Python environment. It provides a way to have interactive conversations with the chatbot, allowing users to send prompts and receive model-generated responses. The project also includes features to execute code, create Python files, and perform various tasks. 
 
 ## # OpenAI Python Code Generator
