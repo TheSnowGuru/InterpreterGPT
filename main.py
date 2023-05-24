@@ -31,7 +31,49 @@ def validate_code(code):
         return True
     except SyntaxError as e:
         print(f"Syntax error in generated code: {e}")
+        if not fix_code(code, e):
+            return False
+        return validate_code(code)
+
+"""
+Given a piece of code and an error message, this function extracts the line number from the error message,
+constructs a prompt for ChatGPT with the code and the error message, sends the prompt to ChatGPT, and extracts
+the fixed code from the response. It then checks if the fixed code is valid by compiling it, and returns the
+fixed code if it is valid, or False otherwise.
+:param code: A string representing the code to be fixed.
+:param error: An error message indicating the error in the code.
+:return: Either a string representing the fixed code, or False.
+"""
+def fix_code(code, error):
+    # Extract line number from error message
+    line_num = int(re.search(r"line (\d+)", str(error)).group(1))
+
+    # Construct prompt for ChatGPT
+    prompt = f"Fix the error in line {line_num}: {error}\nCode:\n{code}"
+
+    # Send prompt to ChatGPT
+    response = openai.Completion.create(
+        engine="davinci-codex",
+        prompt=prompt,
+        max_tokens=1024,
+        n=1,
+        stop=None,
+        temperature=0.8,
+    )
+
+    # Extract fixed code from response
+    fixed_code = response.choices[0].text.strip()
+
+    # Check if the fixed code is valid
+    try:
+        compile(fixed_code, "<string>", "exec")
+    except SyntaxError:
         return False
+
+    # Return fixed code
+    return fixed_code
+
+
 
 # Function to execute the generated code
 def execute_code(file_name):
